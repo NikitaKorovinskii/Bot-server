@@ -19,7 +19,7 @@ def is_allowed(message):
 def start(message):
     if not is_allowed(message):
         return
-    bot.reply_to(message, "VPN Bot готов 🚀")
+    bot.reply_to(message, "VPN 123 готов 🚀")
 
 
 # ping для теста CI/CD
