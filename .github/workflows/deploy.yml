@@ -1,11 +1,12 @@
 script: |
   cd ~/vpn_bot
+
   git pull origin main
 
   docker stop vpn-bot || true
   docker rm vpn-bot || true
 
-  docker build --no-cache -t vpn-bot .
+  docker build --no-cache -t vpn-bot ~/vpn_bot
 
   docker run -d \
     --name vpn-bot \
