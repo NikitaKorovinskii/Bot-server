@@ -16,6 +16,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          envs: GH_TOKEN
           script: |
             set -e
 
@@ -27,8 +28,10 @@ jobs:
 
             cd /tmp/vpn-bot
 
+            echo "🧱 BUILD IMAGE"
             docker build --no-cache -t vpn-bot .
 
+            echo "🧹 RESTART CONTAINER"
             docker rm -f vpn-bot || true
 
             docker run -d \
