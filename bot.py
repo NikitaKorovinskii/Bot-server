@@ -5,7 +5,7 @@ import os
 # env
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ALLOWED_USER_IDS = list(map(int, os.getenv("ALLOWED_USER_IDS", "").split(",")))
-
+print("🚀 DEPLOY TEST: FIX-DOCKERFILE-1")
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
