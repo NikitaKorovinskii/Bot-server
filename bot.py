@@ -86,19 +86,6 @@ def restart_vpn(message):
     bot.reply_to(message, "🔄 VPN контейнеры перезапущены")
 
 
-# уведомление о деплое
-def send_deploy_message():
-    try:
-        for user_id in ALLOWED_USER_IDS:
-            bot.send_message(
-                user_id,
-                "🚀 Бот обновлён (CI/CD деплой успешен)"
-            )
-    except Exception as e:
-        print("notify error:", e)
-
-
 # запуск
 if __name__ == "__main__":
-    send_deploy_message()
     bot.infinity_polling()
