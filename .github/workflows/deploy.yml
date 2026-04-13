@@ -1,24 +1,23 @@
-name: Deploy VPN Bot
+name: Deploy Bot
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy over SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            docker stop vpn-bot || true
+            docker rm vpn-bot || true
             cd ~/vpn_bot
-            git pull origin main
             docker build -t vpn-bot .
-            docker rm -f vpn-bot || true
-            docker run -d               --name vpn-bot               --restart always               --env-file .env               -v /var/run/docker.sock:/var/run/docker.sock               vpn-bot
+            docker run -d               --name vpn-bot               --restart always               --env-file .env               vpn-bot
