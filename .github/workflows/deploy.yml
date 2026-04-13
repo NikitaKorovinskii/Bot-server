@@ -1,42 +1,16 @@
-name: Deploy Bot
+set -e
 
-on:
-  push:
-    branches:
-      - main
+echo "🚀 START DEPLOY"
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+docker rm -f vpn-bot || true
 
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            set -e
+docker build --no-cache -t vpn-bot https://github.com/NikitaKorovinskii/Bot-server.git
 
-            echo "🚀 START DEPLOY"
+docker run -d \
+  --name vpn-bot \
+  --restart always \
+  --env-file /root/vpn_bot/.env \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  vpn-bot
 
-            rm -rf /tmp/vpn-bot
-            git clone https://github.com/NikitaKorovinskii/Bot-server.git /tmp/vpn-bot
-
-            cd /tmp/vpn-bot
-
-            echo "🧱 BUILD IMAGE"
-            docker build --no-cache -t vpn-bot .
-
-            echo "🧹 RESTART CONTAINER"
-            docker rm -f vpn-bot || true
-
-            docker run -d \
-              --name vpn-bot \
-              --restart always \
-              --env-file /root/vpn_bot/.env \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              vpn-bot
-
-            echo "✅ DONE"
+echo "✅ DONE"
