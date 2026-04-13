@@ -23,7 +23,7 @@ jobs:
 
             rm -rf /tmp/vpn-bot
 
-            git clone https://$GH_TOKEN@github.com/NikitaKorovinskii/Bot-server.git /tmp/vpn-bot
+            git clone https://x-access-token:${GH_TOKEN}@github.com/NikitaKorovinskii/Bot-server.git /tmp/vpn-bot
 
             cd /tmp/vpn-bot
 
