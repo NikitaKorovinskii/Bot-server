@@ -47,7 +47,7 @@ def help_cmd(message):
 def ping(message):
     if not is_allowed(message):
         return
-    bot.reply_to(message, "🟢 Бот работает (CI/CD ок)")
+    bot.reply_to(message, "Даня хуй!")
 
 
 # docker status
