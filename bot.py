@@ -1,6 +1,6 @@
 import telebot
-import subprocess
 import os
+import docker
 
 # env
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -8,13 +8,19 @@ ALLOWED_USER_IDS = list(map(int, os.getenv("ALLOWED_USER_IDS", "").split(",")))
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
+client = docker.from_env()
 
-# проверка доступа
+# whitelist контейнеров (ВАЖНО)
+VPN_CONTAINERS = [
+    "amnezia-awg",
+    "amnezia-socks5proxy"
+]
+
+
 def is_allowed(message):
     return message.from_user.id in ALLOWED_USER_IDS
 
 
-# help
 HELP_TEXT = """
 🤖 Управление сервером:
 
@@ -26,7 +32,6 @@ HELP_TEXT = """
 """
 
 
-# старт
 @bot.message_handler(commands=['start'])
 def start(message):
     if not is_allowed(message):
@@ -34,7 +39,6 @@ def start(message):
     bot.reply_to(message, f"🚀 VPN Bot готов\n{HELP_TEXT}")
 
 
-# help
 @bot.message_handler(commands=['help'])
 def help_cmd(message):
     if not is_allowed(message):
@@ -42,50 +46,54 @@ def help_cmd(message):
     bot.reply_to(message, HELP_TEXT)
 
 
-# ping
 @bot.message_handler(commands=['ping'])
 def ping(message):
     if not is_allowed(message):
         return
-    bot.reply_to(message, "Даня хуй!")
+    bot.reply_to(message, "pong")
 
 
-# docker status
 @bot.message_handler(commands=['status'])
 def status(message):
     if not is_allowed(message):
         return
-    result = subprocess.getoutput("docker ps --format '{{.Names}} - {{.Status}}'")
-    bot.reply_to(message, f"📦 Контейнеры Docker:\n{result}")
+    result = os.popen("docker ps --format '{{.Names}} - {{.Status}}'").read()
+    bot.reply_to(message, f"📦 Контейнеры:\n{result}")
 
 
-# disk usage
 @bot.message_handler(commands=['disk'])
 def disk(message):
     if not is_allowed(message):
         return
-    result = subprocess.getoutput("df -h /")
-    bot.reply_to(message, f"💾 Использование диска:\n{result}")
+    result = os.popen("df -h /").read()
+    bot.reply_to(message, f"💾 Диск:\n{result}")
 
 
-# uptime
 @bot.message_handler(commands=['uptime'])
 def uptime(message):
     if not is_allowed(message):
         return
-    result = subprocess.getoutput("uptime")
-    bot.reply_to(message, f"⏱ Аптайм сервера:\n{result}")
+    result = os.popen("uptime").read()
+    bot.reply_to(message, f"⏱ Аптайм:\n{result}")
 
 
-# restart VPN
 @bot.message_handler(commands=['restart_vpn'])
 def restart_vpn(message):
     if not is_allowed(message):
         return
-    subprocess.run("docker restart amnezia-awg amnezia-socks5proxy", shell=True)
-    bot.reply_to(message, "🔄 VPN контейнеры перезапущены")
+
+    logs = []
+
+    for name in VPN_CONTAINERS:
+        try:
+            container = client.containers.get(name)
+            container.restart()
+            logs.append(f"✅ {name}")
+        except Exception as e:
+            logs.append(f"❌ {name}: {str(e)}")
+
+    bot.reply_to(message, "🔄 VPN restart:\n" + "\n".join(logs))
 
 
-# запуск
 if __name__ == "__main__":
     bot.infinity_polling()
