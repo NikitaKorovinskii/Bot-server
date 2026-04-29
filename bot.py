@@ -54,7 +54,7 @@ def help_cmd(message):
 def ping(message):
     if not is_allowed(message):
         return
-    bot.reply_to(message, "pong")
+    bot.reply_to(message, "pong1")
 
 
 @bot.message_handler(commands=['status'])
