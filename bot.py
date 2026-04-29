@@ -4,7 +4,11 @@ import docker
 
 # env
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ALLOWED_USER_IDS = list(map(int, os.getenv("ALLOWED_USER_IDS", "").split(",")))
+ALLOWED_USER_IDS = [
+    int(x.strip())
+    for x in os.getenv("ALLOWED_USER_IDS", "").split(",")
+    if x.strip()
+]
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
