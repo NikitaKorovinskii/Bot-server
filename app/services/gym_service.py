@@ -1,2 +1,2 @@
-def get_last_workouts(user_id):
-    return f"Последние тренировки пользователя {user_id}"
+def get_gym_section_message() -> str:
+    return "Вы в разделе тренировки."

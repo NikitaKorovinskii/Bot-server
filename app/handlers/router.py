@@ -1,7 +1,6 @@
 from app.utils.auth import is_allowed
 from app.handlers.ui import render_main, render_server, render_gym, action_server
 from app.utils.keyboards import main_menu
-from app.services.gym_service import get_last_workouts
 
 
 def register_router(bot):
@@ -26,11 +25,11 @@ def register_router(bot):
 
         print("🔥 CALLBACK:", call.data)
 
-        bot.answer_callback_query(call.id)
-
         if not is_allowed(call.from_user.id):
             bot.answer_callback_query(call.id, "⛔ Нет доступа", show_alert=True)
             return
+
+        bot.answer_callback_query(call.id)
 
         data = call.data
 
@@ -42,17 +41,11 @@ def register_router(bot):
 
         elif data == "back_main":
             bot.edit_message_text(
-                "🚀 ПАНЕЛЬ УПРАВЛЕНИЯ",
+                "Главное меню",
                 call.message.chat.id,
                 call.message.message_id,
                 reply_markup=main_menu()
             )
 
-        elif data in ["srv_status", "srv_disk", "srv_uptime", "srv_vpn"]:
+        elif data in ["srv_status", "srv_disk", "srv_restart"]:
             action_server(bot, call, data)
-
-        elif data == "gym_progress":
-            bot.send_message(
-                call.message.chat.id,
-                get_last_workouts(call.from_user.id)
-            )
