@@ -21,6 +21,7 @@ def register(bot):
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback(call):
+        print("CALLBACK HIT:", call.data)
         if not is_allowed(call.message):
             return
 
