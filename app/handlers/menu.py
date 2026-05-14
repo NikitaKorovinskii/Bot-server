@@ -4,9 +4,9 @@ from app.services.system_service import get_disk, get_uptime
 from app.services.docker_service import get_docker_status, restart_vpn
 from app.services.gym_service import get_last_workouts
 
-
+print("MENU MODULE IMPORTED")
 def register(bot):
-    print("MENU REGISTERED")
+    print("MENU REGISTER EXECUTED")
 
     @bot.message_handler(commands=['start'])
     def start(message):
