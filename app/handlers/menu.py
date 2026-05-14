@@ -4,9 +4,8 @@ from app.services.system_service import get_disk, get_uptime
 from app.services.docker_service import get_docker_status, restart_vpn
 from app.services.gym_service import get_last_workouts
 
-print("MENU MODULE IMPORTED")
+
 def register(bot):
-    print("MENU REGISTER EXECUTED")
 
     @bot.message_handler(commands=['start'])
     def start(message):
@@ -21,23 +20,33 @@ def register(bot):
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback(call):
-        print("CALLBACK HIT:", call.data)
         if not is_allowed(call.message):
             return
 
         data = call.data
         chat_id = call.message.chat.id
 
-        print("CALLBACK:", data)  # 🔥 ДИАГНОСТИКА
+        print("🔥 CALLBACK:", data)
 
-        # MAIN
+        # ⚠️ ОБЯЗАТЕЛЬНО — снимает "зависание кнопки"
+        bot.answer_callback_query(call.id)
+
         if data == "menu_server":
-            bot.send_message(chat_id, "📦 Сервер:", reply_markup=server_menu())
+            bot.edit_message_text(
+                "📦 СЕРВЕР",
+                chat_id,
+                call.message.message_id,
+                reply_markup=server_menu()
+            )
 
         elif data == "menu_gym":
-            bot.send_message(chat_id, "🏋️ Зал:", reply_markup=gym_menu())
+            bot.edit_message_text(
+                "🏋️ ЗАЛ",
+                chat_id,
+                call.message.message_id,
+                reply_markup=gym_menu()
+            )
 
-        # SERVER
         elif data == "srv_status":
             bot.send_message(chat_id, get_docker_status())
 
@@ -50,13 +59,16 @@ def register(bot):
         elif data == "srv_vpn":
             bot.send_message(chat_id, restart_vpn())
 
-        # GYM
         elif data == "gym_progress":
             bot.send_message(chat_id, get_last_workouts(call.from_user.id))
 
         elif data == "gym_add":
             bot.send_message(chat_id, "Напиши: /workout ...")
 
-        # BACK
         elif data == "back_main":
-            bot.send_message(chat_id, "🏠 Главное меню", reply_markup=main_menu())
+            bot.edit_message_text(
+                "🚀 Панель управления:",
+                chat_id,
+                call.message.message_id,
+                reply_markup=main_menu()
+            )
