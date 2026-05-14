@@ -6,6 +6,7 @@ from app.services.gym_service import get_last_workouts
 
 
 def register(bot):
+    print("MENU REGISTERED")
 
     @bot.message_handler(commands=['start'])
     def start(message):
