@@ -2,6 +2,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 def main_menu():
+    print("🔥 main_menu:")
     kb = InlineKeyboardMarkup()
 
     kb.row(
