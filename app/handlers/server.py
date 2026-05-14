@@ -1,6 +1,7 @@
 from app.utils.auth import is_allowed
-from app.services.system_service import get_docker_status, get_disk, get_uptime
-from app.services.docker_service import restart_vpn
+from app.services.system_service import get_disk, get_uptime
+from app.services.docker_service import get_docker_status, restart_vpn
+
 
 def register(bot):
 
