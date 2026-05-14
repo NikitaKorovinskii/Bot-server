@@ -3,8 +3,9 @@ from app.handlers.ui import render_main, render_server, render_gym
 from app.handlers.ui import action_server
 from app.utils.keyboards import main_menu
 
-
+print("🔥 CALLBACK FUNCTION LOADED")
 def register(bot):
+    print("🔥 CALLBACK HIT:", call.data)
 
     @bot.message_handler(commands=['start'])
     def start(message):
