@@ -36,7 +36,6 @@ def gym_menu():
     kb = InlineKeyboardMarkup()
 
     kb.row(
-        InlineKeyboardButton("➕ Тренировка", callback_data="gym_add"),
         InlineKeyboardButton("📈 Прогресс", callback_data="gym_progress")
     )
 

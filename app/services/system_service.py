@@ -1,13 +1,7 @@
-import subprocess
+import os
 
+def get_disk():
+    return os.popen("df -h /").read()
 
-def run(cmd: str) -> str:
-    return subprocess.getoutput(cmd)
-
-
-def get_disk() -> str:
-    return run("df -h /")
-
-
-def get_uptime() -> str:
-    return run("uptime")
+def get_uptime():
+    return os.popen("uptime").read()

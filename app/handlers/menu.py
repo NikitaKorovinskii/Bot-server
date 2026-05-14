@@ -1,8 +1,7 @@
 from app.utils.auth import is_allowed
-from app.utils.keyboards import main_menu, server_menu, gym_menu
-from app.services.system_service import get_disk, get_uptime
-from app.services.docker_service import get_docker_status, restart_vpn
-from app.services.gym_service import get_last_workouts
+from app.handlers.ui import render_main, render_server, render_gym
+from app.handlers.ui import action_server
+from app.utils.keyboards import main_menu
 
 
 def register(bot):
@@ -12,11 +11,7 @@ def register(bot):
         if not is_allowed(message):
             return
 
-        bot.send_message(
-            message.chat.id,
-            "🚀 Панель управления:",
-            reply_markup=main_menu()
-        )
+        render_main(bot, message.chat.id)
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback(call):
@@ -28,47 +23,25 @@ def register(bot):
 
         print("🔥 CALLBACK:", data)
 
-        # ⚠️ ОБЯЗАТЕЛЬНО — снимает "зависание кнопки"
-        bot.answer_callback_query(call.id)
-
+        # NAVIGATION
         if data == "menu_server":
-            bot.edit_message_text(
-                "📦 СЕРВЕР",
-                chat_id,
-                call.message.message_id,
-                reply_markup=server_menu()
-            )
+            render_server(bot, call)
 
         elif data == "menu_gym":
-            bot.edit_message_text(
-                "🏋️ ЗАЛ",
-                chat_id,
-                call.message.message_id,
-                reply_markup=gym_menu()
-            )
-
-        elif data == "srv_status":
-            bot.send_message(chat_id, get_docker_status())
-
-        elif data == "srv_disk":
-            bot.send_message(chat_id, get_disk())
-
-        elif data == "srv_uptime":
-            bot.send_message(chat_id, get_uptime())
-
-        elif data == "srv_vpn":
-            bot.send_message(chat_id, restart_vpn())
-
-        elif data == "gym_progress":
-            bot.send_message(chat_id, get_last_workouts(call.from_user.id))
-
-        elif data == "gym_add":
-            bot.send_message(chat_id, "Напиши: /workout ...")
+            render_gym(bot, call)
 
         elif data == "back_main":
             bot.edit_message_text(
-                "🚀 Панель управления:",
+                "🚀 ПАНЕЛЬ УПРАВЛЕНИЯ",
                 chat_id,
                 call.message.message_id,
                 reply_markup=main_menu()
             )
+
+        # SERVER ACTIONS
+        elif data in ["srv_status", "srv_disk", "srv_uptime", "srv_vpn"]:
+            action_server(bot, call, data)
+
+        # GYM ACTIONS
+        elif data == "gym_progress":
+            action_server(bot, call, data)
