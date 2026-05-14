@@ -7,60 +7,69 @@ from app.services.gym_service import get_last_workouts
 
 def register(bot):
 
-    @bot.message_handler(func=lambda m: True)
-    def router(message):
+    @bot.message_handler(commands=['start'])
+    def start(message):
         if not is_allowed(message):
             return
 
-        text = (message.text or "").strip()
+        bot.send_message(
+            message.chat.id,
+            "🚀 Панель управления:",
+            reply_markup=main_menu()
+        )
 
-        print("DEBUG:", repr(text))
+    @bot.callback_query_handler(func=lambda call: True)
+    def callback_handler(call):
+        if not is_allowed(call.message):
+            return
+
+        data = call.data
+        chat_id = call.message.chat.id
+        msg_id = call.message.message_id
 
         # MAIN MENU
-        if "Сервер" in text:
-            bot.send_message(
-                message.chat.id,
-                "📦 Сервер:",
+        if data == "menu_server":
+            bot.edit_message_text(
+                "📦 СЕРВЕР",
+                chat_id,
+                msg_id,
                 reply_markup=server_menu()
             )
 
-        elif "Зал" in text:
-            bot.send_message(
-                message.chat.id,
-                "🏋️ Зал:",
+        elif data == "menu_gym":
+            bot.edit_message_text(
+                "🏋️ ЗАЛ",
+                chat_id,
+                msg_id,
                 reply_markup=gym_menu()
             )
 
-        # SERVER ACTIONS
-        elif "Статус" in text:
-            bot.send_message(message.chat.id, get_docker_status())
+        # SERVER
+        elif data == "srv_status":
+            bot.answer_callback_query(call.id)
+            bot.send_message(chat_id, get_docker_status())
 
-        elif "Диск" in text:
-            bot.send_message(message.chat.id, get_disk())
+        elif data == "srv_disk":
+            bot.send_message(chat_id, get_disk())
 
-        elif "Аптайм" in text:
-            bot.send_message(message.chat.id, get_uptime())
+        elif data == "srv_uptime":
+            bot.send_message(chat_id, get_uptime())
 
-        elif "VPN" in text:
-            bot.send_message(message.chat.id, restart_vpn())
+        elif data == "srv_vpn":
+            bot.send_message(chat_id, restart_vpn())
 
         # GYM
-        elif "Прогресс" in text:
-            bot.send_message(
-                message.chat.id,
-                get_last_workouts(message.from_user.id)
-            )
+        elif data == "gym_progress":
+            bot.send_message(chat_id, get_last_workouts(call.from_user.id))
 
-        elif "Тренировка" in text:
-            bot.send_message(
-                message.chat.id,
-                "Напиши:\n/workout <что сделал>"
-            )
+        elif data == "gym_add":
+            bot.send_message(chat_id, "Напиши:\n/workout <что сделал>")
 
         # BACK
-        elif "Назад" in text:
-            bot.send_message(
-                message.chat.id,
-                "🏠 Главное меню",
+        elif data == "back_main":
+            bot.edit_message_text(
+                "🚀 Панель управления:",
+                chat_id,
+                msg_id,
                 reply_markup=main_menu()
             )
