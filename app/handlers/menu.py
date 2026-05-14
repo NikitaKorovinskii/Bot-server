@@ -19,34 +19,24 @@ def register(bot):
         )
 
     @bot.callback_query_handler(func=lambda call: True)
-    def callback_handler(call):
+    def callback(call):
         if not is_allowed(call.message):
             return
 
         data = call.data
         chat_id = call.message.chat.id
-        msg_id = call.message.message_id
 
-        # MAIN MENU
+        print("CALLBACK:", data)  # 🔥 ДИАГНОСТИКА
+
+        # MAIN
         if data == "menu_server":
-            bot.edit_message_text(
-                "📦 СЕРВЕР",
-                chat_id,
-                msg_id,
-                reply_markup=server_menu()
-            )
+            bot.send_message(chat_id, "📦 Сервер:", reply_markup=server_menu())
 
         elif data == "menu_gym":
-            bot.edit_message_text(
-                "🏋️ ЗАЛ",
-                chat_id,
-                msg_id,
-                reply_markup=gym_menu()
-            )
+            bot.send_message(chat_id, "🏋️ Зал:", reply_markup=gym_menu())
 
         # SERVER
         elif data == "srv_status":
-            bot.answer_callback_query(call.id)
             bot.send_message(chat_id, get_docker_status())
 
         elif data == "srv_disk":
@@ -63,13 +53,8 @@ def register(bot):
             bot.send_message(chat_id, get_last_workouts(call.from_user.id))
 
         elif data == "gym_add":
-            bot.send_message(chat_id, "Напиши:\n/workout <что сделал>")
+            bot.send_message(chat_id, "Напиши: /workout ...")
 
         # BACK
         elif data == "back_main":
-            bot.edit_message_text(
-                "🚀 Панель управления:",
-                chat_id,
-                msg_id,
-                reply_markup=main_menu()
-            )
+            bot.send_message(chat_id, "🏠 Главное меню", reply_markup=main_menu())
