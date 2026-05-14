@@ -1,25 +1,26 @@
 from app.utils.auth import is_allowed
-from app.utils.keyboards import gym_menu
 from app.services.gym_service import add_workout, get_last_workouts
 
 
 def register(bot):
 
-    @bot.message_handler(func=lambda m: True)
-    def gym_router(message):
+    @bot.message_handler(commands=['workout'])
+    def workout_cmd(message):
         if not is_allowed(message):
             return
 
-        text = message.text
+        text = message.text.replace("/workout", "").strip()
 
-        if text == "➕ Тренировка":
-            bot.send_message(
-                message.chat.id,
-                "Напиши тренировку в формате:\n/workout bench press 80kg"
-            )
+        if not text:
+            bot.send_message(message.chat.id, "Напиши: /workout жим 80кг")
+            return
 
-        elif text == "📈 Прогресс":
-            bot.send_message(
-                message.chat.id,
-                get_last_workouts(message.from_user.id)
-            )
+        bot.send_message(message.chat.id, add_workout(message.from_user.id, text))
+
+
+    @bot.message_handler(commands=['progress'])
+    def progress_cmd(message):
+        if not is_allowed(message):
+            return
+
+        bot.send_message(message.chat.id, get_last_workouts(message.from_user.id))
