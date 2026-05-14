@@ -31,14 +31,22 @@ def register_router(bot):
 
         print("🔥 CALLBACK:", call.data)
 
-        if not is_allowed(call.message):
-            bot.answer_callback_query(call.id, "Нет доступа")
+        # ❌ ДОСТУП
+        if not is_allowed(call.from_user):
+            bot.answer_callback_query(
+                call.id,
+                "⛔ Нет доступа",
+                show_alert=True
+            )
             return
 
         data = call.data
+
         bot.answer_callback_query(call.id)
 
+        # -------------------------
         # NAVIGATION
+        # -------------------------
         if data == "menu_server":
             render_server(bot, call)
 
@@ -53,11 +61,15 @@ def register_router(bot):
                 reply_markup=main_menu()
             )
 
+        # -------------------------
         # SERVER ACTIONS
+        # -------------------------
         elif data in ["srv_status", "srv_disk", "srv_uptime", "srv_vpn"]:
             action_server(bot, call, data)
 
+        # -------------------------
         # GYM
+        # -------------------------
         elif data == "gym_progress":
             bot.send_message(
                 call.message.chat.id,
