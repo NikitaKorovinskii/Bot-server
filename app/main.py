@@ -1,17 +1,11 @@
 import telebot
 from app.config import BOT_TOKEN
-from app.handlers import register_all
-
-print("🚀 BOT STARTING")
+from app.handlers.router import register_router
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-register_all(bot)
+register_router(bot)
 
-print("🚀 HANDLERS LOADED")
-
-bot.infinity_polling(
-    skip_pending=True,
-    timeout=60,
-    long_polling_timeout=60
-)
+if __name__ == "__main__":
+    print("🚀 BOT STARTED")
+    bot.infinity_polling()
