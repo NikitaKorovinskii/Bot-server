@@ -1,49 +1,31 @@
-from app.utils.auth import is_allowed
-from app.handlers.ui import render_main, render_server, render_gym
-from app.handlers.ui import action_server
-from app.utils.keyboards import main_menu
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    print("🔥 CALLBACK:", call.data)
 
-print("🔥 CALLBACK FUNCTION LOADED")
-def register(bot):
-    print("🔥 CALLBACK HIT:")
+    if not is_allowed(call.message):
+        bot.answer_callback_query(call.id, "Нет доступа")
+        return
 
-    @bot.message_handler(commands=['start'])
-    def start(message):
-        if not is_allowed(message):
-            return
+    data = call.data
 
-        render_main(bot, message.chat.id)
+    bot.answer_callback_query(call.id)
 
-    @bot.callback_query_handler(func=lambda call: True)
-    def callback(call):
-        print("🔥 CALLBACK RECEIVED:")
-        if not is_allowed(call.message):
-            return
+    if data == "menu_server":
+        render_server(bot, call)
 
-        data = call.data
-        chat_id = call.message.chat.id
+    elif data == "menu_gym":
+        render_gym(bot, call)
 
-        print("🔥 CALLBACK:", data)
+    elif data == "back_main":
+        bot.edit_message_text(
+            "🚀 ПАНЕЛЬ УПРАВЛЕНИЯ",
+            call.message.chat.id,
+            call.message.message_id,
+            reply_markup=main_menu()
+        )
 
-        # NAVIGATION
-        if data == "menu_server":
-            render_server(bot, call)
+    elif data in ["srv_status", "srv_disk", "srv_uptime", "srv_vpn"]:
+        action_server(bot, call, data)
 
-        elif data == "menu_gym":
-            render_gym(bot, call)
-
-        elif data == "back_main":
-            bot.edit_message_text(
-                "🚀 ПАНЕЛЬ УПРАВЛЕНИЯ",
-                chat_id,
-                call.message.message_id,
-                reply_markup=main_menu()
-            )
-
-        # SERVER ACTIONS
-        elif data in ["srv_status", "srv_disk", "srv_uptime", "srv_vpn"]:
-            action_server(bot, call, data)
-
-        # GYM ACTIONS
-        elif data == "gym_progress":
-            action_server(bot, call, data)
+    elif data == "gym_progress":
+        action_server(bot, call, data)

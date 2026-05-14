@@ -8,7 +8,10 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 register_all(bot)
 
-print("🚀 BOT READY")
+print("🚀 HANDLERS LOADED")
 
-if __name__ == "__main__":
-    bot.infinity_polling()
+bot.infinity_polling(
+    skip_pending=True,
+    timeout=60,
+    long_polling_timeout=60
+)
