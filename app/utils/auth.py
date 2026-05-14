@@ -1,8 +1,13 @@
 import os
 
+raw = os.getenv("ALLOWED_USER_IDS", "")
+
 ALLOWED_USER_IDS = [
-    int(x) for x in os.getenv("ALLOWED_USER_IDS", "").split(",") if x
+    int(x.strip())
+    for x in raw.split(",")
+    if x.strip().isdigit()
 ]
 
-def is_allowed_user(user_id: int):
+
+def is_allowed(user_id: int) -> bool:
     return user_id in ALLOWED_USER_IDS
