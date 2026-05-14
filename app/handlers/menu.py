@@ -5,7 +5,7 @@ from app.utils.keyboards import main_menu
 
 print("🔥 CALLBACK FUNCTION LOADED")
 def register(bot):
-    print("🔥 CALLBACK HIT:", call.data)
+    print("🔥 CALLBACK HIT:")
 
     @bot.message_handler(commands=['start'])
     def start(message):
@@ -16,7 +16,7 @@ def register(bot):
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback(call):
-        print("🔥 CALLBACK RECEIVED:", call.data)
+        print("🔥 CALLBACK RECEIVED:")
         if not is_allowed(call.message):
             return
 
