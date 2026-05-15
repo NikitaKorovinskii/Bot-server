@@ -1,13 +1,6 @@
-import os
-
-raw = os.getenv("ALLOWED_USER_IDS", "")
-
-ALLOWED_USER_IDS = [
-    int(x.strip())
-    for x in raw.split(",")
-    if x.strip().isdigit()
-]
+from app.config import ALLOWED_USER_IDS
 
 
 def is_allowed(user_id: int) -> bool:
+    """Check if user ID is in the allowed list."""
     return user_id in ALLOWED_USER_IDS

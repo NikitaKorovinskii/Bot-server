@@ -1,51 +1,57 @@
+import logging
 from app.utils.auth import is_allowed
 from app.handlers.ui import render_main, render_server, render_gym, action_server
 from app.utils.keyboards import main_menu
 
+logger = logging.getLogger(__name__)
+
 
 def register_router(bot):
-
-    print("🔥 ROUTER LOADED")
+    logger.info("🔥 ROUTER LOADED")
 
     # -------------------------
     # START
     # -------------------------
     @bot.message_handler(commands=['start'])
     def start(message):
-        if not is_allowed(message.from_user.id):
+        user_id = message.from_user.id
+        if not is_allowed(user_id):
+            logger.warning(f"⛔ Unauthorized access attempt from user {user_id}")
+            bot.reply_to(message, "⛔ У вас нет доступа к этому боту")
             return
 
+        logger.info(f"✅ User {user_id} started bot")
         render_main(bot, message.chat.id)
 
     # -------------------------
-    # CALLBACKS
+    # TEXT MESSAGES
     # -------------------------
-    @bot.callback_query_handler(func=lambda call: True)
-    def callback(call):
-
-        print("🔥 CALLBACK:", call.data)
-
-        if not is_allowed(call.from_user.id):
-            bot.answer_callback_query(call.id, "⛔ Нет доступа", show_alert=True)
+    @bot.message_handler(func=lambda message: True)
+    def handle_text(message):
+        user_id = message.from_user.id
+        if not is_allowed(user_id):
+            logger.warning(f"⛔ Unauthorized access attempt from user {user_id}")
+            bot.reply_to(message, "⛔ У вас нет доступа к этому боту")
             return
 
-        bot.answer_callback_query(call.id)
+        text = message.text
+        chat_id = message.chat.id
+        logger.info(f"📬 Message from user {user_id}: {text}")
 
-        data = call.data
+        # Main menu actions
+        if text == "🖥 Управление сервером":
+            render_server(bot, chat_id)
 
-        if data == "menu_server":
-            render_server(bot, call)
+        elif text == "🏋️ Тренировки":
+            render_gym(bot, chat_id)
 
-        elif data == "menu_gym":
-            render_gym(bot, call)
+        # Server menu actions
+        elif text in ["📦 Состояние контейнеров", "🔄 Перезапустить контейнеры", "💾 Место на сервере"]:
+            action_server(bot, chat_id, text)
 
-        elif data == "back_main":
-            bot.edit_message_text(
-                "Главное меню",
-                call.message.chat.id,
-                call.message.message_id,
-                reply_markup=main_menu()
-            )
+        # Back to main menu
+        elif text == "⬅️ Назад в главное меню":
+            render_main(bot, chat_id)
 
-        elif data in ["srv_status", "srv_disk", "srv_restart"]:
-            action_server(bot, call, data)
+        else:
+            bot.reply_to(message, "❓ Команда не распознана. Используйте кнопки меню.")

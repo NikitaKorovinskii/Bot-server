@@ -1,47 +1,23 @@
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 def main_menu():
-    kb = InlineKeyboardMarkup()
-
-    kb.row(
-        InlineKeyboardButton("🖥 Управление сервером", callback_data="menu_server")
-    )
-
-    kb.row(
-        InlineKeyboardButton("🏋️ Тренировки", callback_data="menu_gym")
-    )
-
+    kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+    kb.row("🖥 Управление сервером")
+    kb.row("🏋️ Тренировки")
     return kb
 
 
 def server_menu():
-    kb = InlineKeyboardMarkup()
-
-    kb.row(
-        InlineKeyboardButton("📦 Состояние контейнеров", callback_data="srv_status")
-    )
-
-    kb.row(
-        InlineKeyboardButton("🔄 Перезапустить контейнеры", callback_data="srv_restart")
-    )
-
-    kb.row(
-        InlineKeyboardButton("💾 Место на сервере", callback_data="srv_disk")
-    )
-
-    kb.row(
-        InlineKeyboardButton("⬅️ Назад", callback_data="back_main")
-    )
-
+    kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+    kb.row("📦 Состояние контейнеров")
+    kb.row("🔄 Перезапустить контейнеры")
+    kb.row("💾 Место на сервере")
+    kb.row("⬅️ Назад в главное меню")
     return kb
 
 
 def gym_menu():
-    kb = InlineKeyboardMarkup()
-
-    kb.row(
-        InlineKeyboardButton("⬅️ Назад", callback_data="back_main")
-    )
-
+    kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+    kb.row("⬅️ Назад в главное меню")
     return kb

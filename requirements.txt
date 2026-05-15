@@ -1,2 +1,2 @@
-pyTelegramBotAPI
-docker
+pyTelegramBotAPI==4.14.0
+docker==7.0.0

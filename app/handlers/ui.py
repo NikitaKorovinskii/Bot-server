@@ -11,25 +11,23 @@ from app.services.gym_service import get_gym_section_message
 def render_main(bot, chat_id):
     bot.send_message(
         chat_id,
-        "Главное меню",
+        "📋 Главное меню",
         reply_markup=main_menu()
     )
 
 
-def render_server(bot, call):
-    bot.edit_message_text(
-        "Раздел: управление сервером",
-        call.message.chat.id,
-        call.message.message_id,
+def render_server(bot, chat_id):
+    bot.send_message(
+        chat_id,
+        "🖥 Раздел: управление сервером",
         reply_markup=server_menu()
     )
 
 
-def render_gym(bot, call):
-    bot.edit_message_text(
+def render_gym(bot, chat_id):
+    bot.send_message(
+        chat_id,
         get_gym_section_message(),
-        call.message.chat.id,
-        call.message.message_id,
         reply_markup=gym_menu()
     )
 
@@ -38,14 +36,12 @@ def render_gym(bot, call):
 # SERVER ACTIONS
 # -------------------------
 
-def action_server(bot, call, action):
-    chat_id = call.message.chat.id
-
-    if action == "srv_status":
+def action_server(bot, chat_id, action):
+    if action == "📦 Состояние контейнеров":
         bot.send_message(chat_id, get_container_status())
 
-    elif action == "srv_disk":
+    elif action == "💾 Место на сервере":
         bot.send_message(chat_id, get_disk_usage())
 
-    elif action == "srv_restart":
+    elif action == "🔄 Перезапустить контейнеры":
         bot.send_message(chat_id, restart_managed_containers())

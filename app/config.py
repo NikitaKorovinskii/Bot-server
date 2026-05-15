@@ -14,3 +14,6 @@ VPN_CONTAINERS = [
     "amnezia-awg",
     "amnezia-socks5proxy"
 ]
+
+# Logging configuration
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
