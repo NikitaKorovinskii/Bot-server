@@ -35,6 +35,7 @@ def get_disk_usage() -> str:
     return f"Место на сервере:\n{output}"
 
 
+
 def get_uptime() -> str:
     """Get server uptime."""
     try:
