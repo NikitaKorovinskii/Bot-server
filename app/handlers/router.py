@@ -1,7 +1,14 @@
 import logging
 from app.utils.auth import is_allowed
-from app.handlers.ui import render_main, render_server, render_gym, action_server
-from app.utils.keyboards import main_menu
+from app.handlers.ui import (
+    render_main,
+    render_server,
+    render_server_status,
+    render_restart_containers,
+    render_container_logs,
+    render_gym,
+    action_server,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +52,34 @@ def register_router(bot):
         elif text == "🏋️ Тренировки":
             render_gym(bot, chat_id)
 
-        # Server menu actions
-        elif text in ["📦 Состояние контейнеров", "🔄 Перезапустить контейнеры", "💾 Место на сервере"]:
-            action_server(bot, chat_id, text)
+        # Nested server menu actions
+        elif text == "📊 Статус сервера":
+            render_server_status(bot, chat_id)
 
-        # Back to main menu
+        elif text == "🔄 Перезапустить контейнер":
+            render_restart_containers(bot, chat_id)
+
+        elif text == "📄 Логи контейнера":
+            render_container_logs(bot, chat_id)
+
         elif text == "⬅️ Назад в главное меню":
             render_main(bot, chat_id)
+
+        elif text == "⬅️ Назад в меню сервера":
+            render_server(bot, chat_id)
+
+        elif text == "⬅️ Назад в статус сервера":
+            render_server_status(bot, chat_id)
+
+        elif text in [
+            "📦 Состояние контейнеров",
+            "💾 Место на сервере",
+            "⏱️ Аптайм сервера",
+        ]:
+            action_server(bot, chat_id, text)
+
+        elif text.startswith("🔄 Перезапустить ") or text.startswith("📄 Логи "):
+            action_server(bot, chat_id, text)
 
         else:
             bot.reply_to(message, "❓ Команда не распознана. Используйте кнопки меню.")

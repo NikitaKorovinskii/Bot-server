@@ -63,3 +63,21 @@ def restart_managed_containers() -> str:
 
     output = _run_command(["docker", "restart", *VPN_CONTAINERS])
     return f"Перезапуск контейнеров:\n{output}"
+
+
+def restart_container(container_name: str) -> str:
+    """Restart a single Docker container."""
+    if not container_name:
+        return "Имя контейнера не указано."
+
+    output = _run_command(["docker", "restart", container_name])
+    return f"Перезапуск контейнера {container_name}:\n{output}"
+
+
+def get_container_logs(container_name: str, tail: int = 20) -> str:
+    """Get recent logs for a single Docker container."""
+    if not container_name:
+        return "Имя контейнера не указано."
+
+    output = _run_command(["docker", "logs", "--tail", str(tail), container_name])
+    return f"Логи контейнера {container_name} (последние {tail} строк):\n{output}"
