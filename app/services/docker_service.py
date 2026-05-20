@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib.parse
 from typing import Optional
 
 import docker
@@ -11,8 +12,23 @@ logger = logging.getLogger(__name__)
 
 
 def _normalize_docker_host(host: str) -> str:
-    if host.startswith("unix:///"):
-        return "unix://" + host[len("unix:///" ):]
+    host = host.strip()
+    if not host:
+        return host
+
+    parsed = urllib.parse.urlparse(host)
+    scheme = parsed.scheme.lower()
+
+    if scheme in ("http+docker", "https+docker"):
+        parsed = parsed._replace(scheme="http" if scheme == "http+docker" else "https")
+        return urllib.parse.urlunparse(parsed)
+
+    if scheme == "unix":
+        path = parsed.path
+        if path.startswith("///"):
+            path = path[2:]
+        return f"unix://{path}"
+
     return host
 
 
@@ -27,6 +43,14 @@ def _get_client() -> tuple[Optional[docker.DockerClient], Optional[str]]:
         client.ping()
         return client, None
     except DockerException as exc:
+        if os.path.exists("/var/run/docker.sock"):
+            try:
+                client = docker.DockerClient(base_url="unix://var/run/docker.sock")
+                client.ping()
+                return client, None
+            except DockerException:
+                pass
+
         error_msg = f"Не удалось подключиться к Docker: {exc}"
         logger.error(error_msg)
         return None, error_msg
