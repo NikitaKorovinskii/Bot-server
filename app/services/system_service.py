@@ -1,5 +1,6 @@
 import subprocess
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,36 @@ def get_uptime() -> str:
         error_msg = "Ошибка получения времени работы сервера: timeout"
         logger.error(error_msg)
         return error_msg
+    except FileNotFoundError:
+        logger.warning("Команда 'uptime' не найдена, пытаюсь прочитать /proc/uptime")
+        try:
+            if os.path.exists("/proc/uptime"):
+                with open("/proc/uptime", "r") as f:
+                    secs = float(f.read().split()[0])
+
+                mins, _ = divmod(int(secs), 60)
+                hours, mins = divmod(mins, 60)
+                days, hours = divmod(hours, 24)
+
+                parts = []
+                if days:
+                    parts.append(f"{days} дн.")
+                if hours:
+                    parts.append(f"{hours} ч.")
+                if mins:
+                    parts.append(f"{mins} мин.")
+
+                uptime_str = " ".join(parts) or "меньше минуты"
+                logger.info("Server uptime fetched from /proc/uptime")
+                return f"Аптайм сервера:\n{uptime_str}"
+            else:
+                error_msg = "Команда 'uptime' не найдена и /proc/uptime отсутствует"
+                logger.error(error_msg)
+                return f"Ошибка получения времени работы сервера: {error_msg}"
+        except Exception as exc:
+            error_msg = f"Ошибка при чтении /proc/uptime: {exc}"
+            logger.error(error_msg, exc_info=True)
+            return f"Ошибка получения времени работы сервера: {error_msg}"
     except Exception as exc:
         error_msg = f"Ошибка получения времени работы сервера: {exc}"
         logger.error(error_msg, exc_info=True)
