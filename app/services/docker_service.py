@@ -33,6 +33,15 @@ def _normalize_docker_host(host: str) -> str:
 
 
 def _get_client() -> tuple[Optional[docker.DockerClient], Optional[str]]:
+    socket_path = "/var/run/docker.sock"
+    if os.path.exists(socket_path):
+        try:
+            client = docker.DockerClient(base_url="unix://var/run/docker.sock")
+            client.ping()
+            return client, None
+        except DockerException as exc:
+            logger.warning("Не удалось подключиться через unix-сокет, пробуем DOCKER_HOST: %s", exc)
+
     env = os.environ.copy()
     docker_host = env.get("DOCKER_HOST")
     if docker_host:
@@ -43,14 +52,6 @@ def _get_client() -> tuple[Optional[docker.DockerClient], Optional[str]]:
         client.ping()
         return client, None
     except DockerException as exc:
-        if os.path.exists("/var/run/docker.sock"):
-            try:
-                client = docker.DockerClient(base_url="unix://var/run/docker.sock")
-                client.ping()
-                return client, None
-            except DockerException:
-                pass
-
         error_msg = f"Не удалось подключиться к Docker: {exc}"
         logger.error(error_msg)
         return None, error_msg
