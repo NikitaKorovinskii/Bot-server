@@ -22,9 +22,7 @@ jobs:
 
             cd /tmp/vpn-bot || git clone https://github.com/NikitaKorovinskii/Bot-server.git /tmp/vpn-bot
             cd /tmp/vpn-bot
-
-            git fetch origin
-            git reset --hard origin/main
+            git pull
 
             docker build -t vpn-bot .
 
