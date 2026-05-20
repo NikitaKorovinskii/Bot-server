@@ -61,23 +61,33 @@ def restart_managed_containers() -> str:
         logger.warning(msg)
         return msg
 
+    logger.info(f"🔄 Attempting to restart managed containers: {VPN_CONTAINERS}")
     output = _run_command(["docker", "restart", *VPN_CONTAINERS])
-    return f"Перезапуск контейнеров:\n{output}"
+    logger.info(f"✅ Managed containers restart completed: {output}")
+    return f"🔄 Перезапуск контейнеров:\n{output}"
 
 
 def restart_container(container_name: str) -> str:
     """Restart a single Docker container."""
     if not container_name:
-        return "Имя контейнера не указано."
+        msg = "Имя контейнера не указано."
+        logger.warning(msg)
+        return msg
 
+    logger.info(f"🔄 Attempting to restart container: {container_name}")
     output = _run_command(["docker", "restart", container_name])
-    return f"Перезапуск контейнера {container_name}:\n{output}"
+    logger.info(f"✅ Container {container_name} restart completed: {output}")
+    return f"🔄 Перезапуск контейнера {container_name}:\n{output}"
 
 
 def get_container_logs(container_name: str, tail: int = 20) -> str:
     """Get recent logs for a single Docker container."""
     if not container_name:
-        return "Имя контейнера не указано."
+        msg = "Имя контейнера не указано."
+        logger.warning(msg)
+        return msg
 
+    logger.info(f"📄 Fetching logs for container: {container_name} (tail: {tail})")
     output = _run_command(["docker", "logs", "--tail", str(tail), container_name])
-    return f"Логи контейнера {container_name} (последние {tail} строк):\n{output}"
+    logger.info(f"✅ Logs fetched successfully for {container_name}")
+    return f"📄 Логи контейнера {container_name} (последние {tail} строк):\n{output}"
