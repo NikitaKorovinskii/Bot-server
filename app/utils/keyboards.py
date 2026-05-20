@@ -40,3 +40,9 @@ def logs_menu(containers):
         kb.row(f"📄 Логи {container}")
     kb.row("⬅️ Назад в статус сервера")
     return kb
+
+
+def gym_menu():
+    kb = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+    kb.row("⬅️ Назад в главное меню")
+    return kb
