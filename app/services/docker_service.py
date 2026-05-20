@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Optional
 
 import docker
@@ -9,9 +10,20 @@ from app.config import VPN_CONTAINERS
 logger = logging.getLogger(__name__)
 
 
+def _normalize_docker_host(host: str) -> str:
+    if host.startswith("unix:///"):
+        return "unix://" + host[len("unix:///" ):]
+    return host
+
+
 def _get_client() -> tuple[Optional[docker.DockerClient], Optional[str]]:
+    env = os.environ.copy()
+    docker_host = env.get("DOCKER_HOST")
+    if docker_host:
+        env["DOCKER_HOST"] = _normalize_docker_host(docker_host)
+
     try:
-        client = docker.from_env()
+        client = docker.from_env(environment=env)
         client.ping()
         return client, None
     except DockerException as exc:
