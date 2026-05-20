@@ -11,8 +11,11 @@ ALLOWED_USER_IDS = [
 ]
 
 VPN_CONTAINERS = [
-    "amnezia-awg",
-    "amnezia-socks5proxy"
+    "vpn-bot",
+    "amnezia-xray",
+    "mtproto-proxy",
+    "amnezia-socks5proxy",
+    "amnezia-awg"
 ]
 
 # Logging configuration
